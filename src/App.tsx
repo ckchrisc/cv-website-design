@@ -836,11 +836,11 @@ export default function App() {
               <span className="text-base font-bold text-white tracking-tight flex items-center gap-1.5">
                 CV Website <span className="text-blue-400">Builder</span>
               </span>
-              <p className="text-[10px] text-slate-400 tracking-wide uppercase font-mono">Interactive Developer Portal</p>
+              <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                <p className="text-[9px] text-slate-400 tracking-wide uppercase font-mono">Interactive Developer Portal</p>
+                <span className="text-[8px] text-slate-500 font-mono select-none leading-none">v2.1</span>
+              </div>
             </div>
-          </div>
-          <div className="text-[10px] bg-white/5 border border-white/10 text-slate-400 px-3 py-1 rounded-full font-mono">
-            v2.1 (Secure Access)
           </div>
         </header>
 
@@ -960,7 +960,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
             {/* Return to Portal Button */}
             <button
               type="button"
@@ -968,65 +968,68 @@ export default function App() {
                 setShowLandingPortal(true);
                 setIsPublishedViewer(false);
               }}
-              className="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-white/20 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-all active:scale-[0.98]"
+              className="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-white/20 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition-all active:scale-[0.98] w-full sm:w-auto whitespace-nowrap"
             >
               <Lock className="w-3.5 h-3.5 text-indigo-400" />
-              <span>首頁 (Portal)</span>
+              <span className="whitespace-nowrap">首頁 (Portal)</span>
             </button>
 
-            {/* View Mode Selectors */}
-            <div className="bg-black/30 p-1 rounded-xl flex items-center gap-1 border border-white/10 flex-wrap">
+            {/* Sub-container containing View switches and publish action */}
+            <div className="flex flex-col xs:flex-row sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+              {/* View Mode Selectors */}
+              <div className="bg-black/30 p-1 rounded-xl flex items-center justify-between xs:justify-start gap-1 border border-white/10 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("edit")}
+                  className={`flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                    activeTab === "edit"
+                      ? "bg-white/10 text-white border border-white/10 shadow-sm"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <Edit className="w-3.5 h-3.5 text-blue-400" /> <span className="whitespace-nowrap">Form Inputs</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("preview")}
+                  className={`flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                    activeTab === "preview"
+                      ? "bg-white/10 text-white border border-white/10 shadow-sm"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <Eye className="w-3.5 h-3.5 text-blue-400" /> <span className="whitespace-nowrap">Live Resume Site</span>
+                </button>
+              </div>
+
               <button
                 type="button"
-                onClick={() => setActiveTab("edit")}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-                  activeTab === "edit"
-                    ? "bg-white/10 text-white border border-white/10 shadow-sm"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
+                disabled={isPublishing}
+                onClick={async () => {
+                  const success = await publishCV();
+                  if (success) {
+                    setShowPublishModal(true);
+                    setCopied(false);
+                  }
+                }}
+                className="px-4.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white text-xs font-bold rounded-xl transition-all shadow-md hover:shadow-emerald-500/10 active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer w-full sm:w-auto shrink-0 disabled:opacity-50 whitespace-nowrap"
               >
-                <Edit className="w-3.5 h-3.5 text-blue-400" /> Form Inputs
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("preview")}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-                  activeTab === "preview"
-                    ? "bg-white/10 text-white border border-white/10 shadow-sm"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <Eye className="w-3.5 h-3.5 text-blue-400" /> Live Resume Site
+                {isPublishing ? (
+                  <>
+                    <svg className="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    <span>Publishing...</span>
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="w-3.5 h-3.5" />
+                    <span>Publish Webpage</span>
+                  </>
+                )}
               </button>
             </div>
-
-            <button
-              type="button"
-              disabled={isPublishing}
-              onClick={async () => {
-                const success = await publishCV();
-                if (success) {
-                  setShowPublishModal(true);
-                  setCopied(false);
-                }
-              }}
-              className="px-4.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white text-xs font-bold rounded-xl transition-all shadow-md hover:shadow-emerald-500/10 active:scale-95 flex items-center gap-1.5 cursor-pointer shrink-0 disabled:opacity-50"
-            >
-              {isPublishing ? (
-                <>
-                  <svg className="animate-spin h-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  <span>Publishing...</span>
-                </>
-              ) : (
-                <>
-                  <Share2 className="w-3.5 h-3.5" />
-                  Publish Webpage
-                </>
-              )}
-            </button>
           </div>
         </div>
       </header>

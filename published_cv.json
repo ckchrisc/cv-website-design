@@ -1,0 +1,71 @@
+{
+  "slug": "alex",
+  "cvData": {
+    "name": "Alexander Mercer",
+    "nickname": "Alex",
+    "email": "alexander.mercer@gmail.com",
+    "skills": "TypeScript, React, Node.js, Tailwind CSS, UI/UX Design, REST APIs, System Architecture",
+    "contactNo": "+1 (555) 381-5411",
+    "jobPosition": "Full Stack Engineer",
+    "currentPosition": "Senior Interactive Web Developer",
+    "photoUrl": "",
+    "personalProfile": "Innovative and detail-oriented Full Stack Developer with 4+ years of experience constructing high-performance Web-Apps. Passionate about responsive UI components, sleek motion design, and developer ecosystems.",
+    "education": [
+      {
+        "id": "edu_1",
+        "schoolName": "State Technical University",
+        "startYear": "2018",
+        "endYear": "2022",
+        "skillsDuties": "Bachelor of Science in Computer Science. Graduated with honors, specialized in software design paradigms, network security, and interface design frameworks."
+      },
+      {
+        "id": "edu_2",
+        "schoolName": "Creative Design Institute",
+        "startYear": "2022",
+        "endYear": "2023",
+        "skillsDuties": "Professional Certificate in User Interface & Modern Digital Aesthetics."
+      }
+    ],
+    "experience": [
+      {
+        "id": "exp_1",
+        "jobDuties": "Spearheaded front-end design systems using custom utility classes to boost load speeds by 30%. Guided engineering sprints covering full-stack Express REST APIs.",
+        "project": "Performance Analytics Core System"
+      },
+      {
+        "id": "exp_2",
+        "jobDuties": "Iterated on scalable components and integrated interactive charts to display metrics elegantly for business-level users.",
+        "project": "Cloud Invoicing Modernizer Platform"
+      }
+    ],
+    "portfolio": [
+      {
+        "id": "port_1",
+        "projectName": "Apex Kanban Workspace",
+        "description": "A collaborative Kanban workspace featuring live dragging, custom indicators, and sleek dark layouts for tech teams.",
+        "url": "https://example.com/apex-boards",
+        "coverPhoto": "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=600&q=80",
+        "categories": [
+          "COMMERCIAL",
+          "SYSTEMS"
+        ]
+      },
+      {
+        "id": "port_2",
+        "projectName": "Zenith Commerce Portal",
+        "description": "A full headless digital store showcasing grid layouts, smart search, and clean payment interfaces.",
+        "url": "https://example.com/zenith-commerce",
+        "coverPhoto": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80",
+        "categories": [
+          "DOCUMENTARY",
+          "E-COMMERCE"
+        ]
+      }
+    ],
+    "portfolioStyle": "independence"
+  },
+  "primary": "#ff5d34",
+  "secondary": "#ff8d3b",
+  "background": "#0f0d13",
+  "authorKey": "key_9ni19tnw"
+}

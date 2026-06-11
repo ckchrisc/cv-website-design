@@ -1,0 +1,6 @@
+{
+  "name": "CV Website Designer",
+  "description": "An interactive digital CV builder that recommends high-quality color palettes tailored to your target profession using Gemini AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

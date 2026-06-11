@@ -574,6 +574,84 @@ export default function App() {
     setIsSlugManuallyEdited(false);
   };
 
+  // Local color palettes generator as a failure/offline or static fallback
+  const getLocalFallbackColors = (position: string) => {
+    const posLower = (position || "").toLowerCase();
+    if (posLower.includes("design") || posLower.includes("art") || posLower.includes("creative") || posLower.includes("writer") || posLower.includes("photo") || posLower.includes("fashion") || posLower.includes("ux") || posLower.includes("ui")) {
+      return [
+        {
+          name: "Creative Amethyst (Preset)",
+          primary: "#c084fc",
+          secondary: "#be185d",
+          background: "#090d16",
+          explanation: "High-contrast dark space featuring neon amethyst and violet highlights tailored beautifully for creative fields."
+        },
+        {
+          name: "Vibrant Studio Rose (Preset)",
+          primary: "#be185d",
+          secondary: "#6d28d9",
+          background: "#fff1f2",
+          explanation: "Vibrant and aesthetic rose and deep purple pairing over a soft light canvas, capturing creative versatility."
+        },
+        {
+          name: "Soft Sage Harmony (Preset)",
+          primary: "#15803d",
+          secondary: "#0f766e",
+          background: "#f0fdf4",
+          explanation: "An organic, comforting green and teal palette signaling sustainable style and polished digital craftsmanship."
+        }
+      ];
+    } else if (posLower.includes("tech") || posLower.includes("dev") || posLower.includes("eng") || posLower.includes("code") || posLower.includes("soft") || posLower.includes("program") || posLower.includes("data") || posLower.includes("cyber")) {
+      return [
+        {
+          name: "Electric Cyber Space (Preset)",
+          primary: "#06b6d4",
+          secondary: "#0ea5e9",
+          background: "#020617",
+          explanation: "High-contrast electric cyan and sky blue on a premium dark void, reflecting cutting-edge technical code skills."
+        },
+        {
+          name: "Sleek Indigo Slate (Preset)",
+          primary: "#4f46e5",
+          secondary: "#06b6d4",
+          background: "#f8fafc",
+          explanation: "Elegant slate, indigo and cyan tones over high-contrast light background, signaling technical architecture."
+        },
+        {
+          name: "Matrix Emerald (Preset)",
+          primary: "#10b981",
+          secondary: "#059669",
+          background: "#050505",
+          explanation: "Vivid retro matrix green and rich emerald tones, perfectly matching backend and low-level system engineering."
+        }
+      ];
+    } else {
+      return [
+        {
+          name: "Classic Slate Premium (Preset)",
+          primary: "#1e293b",
+          secondary: "#475569",
+          background: "#f8fafc",
+          explanation: "Professional deep slate look giving an exceptionally polished and reliable feel for corporate or enterprise fields."
+        },
+        {
+          name: "Royal Trust Accent (Preset)",
+          primary: "#2563eb",
+          secondary: "#4f46e5",
+          background: "#f0f4ff",
+          explanation: "Trustworthy, structured deep blue tones well-suited for business developer, executive, or management fields."
+        },
+        {
+          name: "Emerald Creative Tech (Preset)",
+          primary: "#059669",
+          secondary: "#0d9488",
+          background: "#f0fdf4",
+          explanation: "Fresh and energetic green accent tones, ideal for front-end developers, product owners or creative specialists."
+        }
+      ];
+    }
+  };
+
   // Submit Handler: fetch tailored design palettes from backend Gemini AI
   const handleSubmitAndAnalyze = async () => {
     if (!cvData.name || !cvData.email || !cvData.jobPosition || !cvData.skillCategories || cvData.skillCategories.length === 0) {
@@ -584,16 +662,16 @@ export default function App() {
     setIsRecommending(true);
     setSelectedPaletteIndex(null);
 
+    let updatedPrimary = primaryColor;
+    let updatedSecondary = secondaryColor;
+    let updatedBackground = backgroundColor;
+
     try {
       const response = await fetch("/api/recommend-colors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ position: cvData.jobPosition })
       });
-
-      let updatedPrimary = primaryColor;
-      let updatedSecondary = secondaryColor;
-      let updatedBackground = backgroundColor;
 
       if (response.ok) {
         const result = await response.json();
@@ -610,6 +688,19 @@ export default function App() {
           setBackgroundColor(updatedBackground);
           setSelectedPaletteIndex(0);
         }
+      } else {
+        // Local fallback on static hosting environments like github pages
+        const fallbackRecs = getLocalFallbackColors(cvData.jobPosition);
+        setRecommendations(fallbackRecs);
+        const firstRec = fallbackRecs[0];
+        updatedPrimary = firstRec.primary;
+        updatedSecondary = firstRec.secondary;
+        updatedBackground = firstRec.background;
+        
+        setPrimaryColor(updatedPrimary);
+        setSecondaryColor(updatedSecondary);
+        setBackgroundColor(updatedBackground);
+        setSelectedPaletteIndex(0);
       }
 
       // Automatically publish to backend to enable clean URL presentation
@@ -619,9 +710,27 @@ export default function App() {
       setActiveTab("preview");
       if (success1) setShowPublishModal(true);
     } catch (err) {
-      console.error("Gemini color recommendations error:", err);
+      console.warn("Utilizing tailored advisor recommendation presets (Local Fallback):", err);
+      const fallbackRecs = getLocalFallbackColors(cvData.jobPosition);
+      setRecommendations(fallbackRecs);
+      const firstRec = fallbackRecs[0];
+      updatedPrimary = firstRec.primary;
+      updatedSecondary = firstRec.secondary;
+      updatedBackground = firstRec.background;
+      
+      setPrimaryColor(updatedPrimary);
+      setSecondaryColor(updatedSecondary);
+      setBackgroundColor(updatedBackground);
+      setSelectedPaletteIndex(0);
+
       // Auto-save standard state to backend as fallback
-      const success2 = await publishCV();
+      let success2 = false;
+      try {
+        success2 = await publishCV(cvData, updatedPrimary, updatedSecondary, updatedBackground);
+      } catch (pErr) {
+        console.error("Failed to publish static fallback:", pErr);
+      }
+      
       // Still auto-navigate directly to the Live Resume Site and deploy shareable link
       setActiveTab("preview");
       if (success2) setShowPublishModal(true);
@@ -662,8 +771,14 @@ export default function App() {
         setSelectedPaletteIndex(0);
       }
     } catch (err) {
-      console.error("Gemini color recommendations error:", err);
-      alert("Failed to query design advisor. Utilizing fallback options.");
+      console.warn("Utilizing offline fallback design advisor recommendations:", err);
+      const fallbackRecs = getLocalFallbackColors(position);
+      setRecommendations(fallbackRecs);
+      const firstRec = fallbackRecs[0];
+      setPrimaryColor(firstRec.primary);
+      setSecondaryColor(firstRec.secondary);
+      setBackgroundColor(firstRec.background);
+      setSelectedPaletteIndex(0);
     } finally {
       setIsRecommending(false);
     }
